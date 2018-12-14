@@ -1,0 +1,97 @@
+﻿@model IEnumerable<WebApplication6.Models.PostComment>
+@using Microsoft.AspNet.Identity;
+@using WebApplication6.Models;
+@{
+    Layout = null;
+    int persId = ViewBag.personId;
+    int childFlag = ViewBag.ChildFlag;
+}
+
+@if (Model.Count() == 0)
+{
+    <h2 class="no-item">Нет коментариев</h2>
+}
+else
+{
+    <ul id="tree1" class="tree">
+        @foreach (var item in Model)
+        {
+        <li>
+            <div class="comment">
+                <div class="coment_header">
+                    <div class="comment_user">
+                        @if (@item.User.MainImage == null)
+                        {
+                            <i class="fa fa-user-circle" aria-hidden="true"></i>
+                        }
+                        else
+                        {
+                            <img class="avatar_small" src="@Url.Action("../Content/Userimg/" + @item.User.MainImage)" />
+                        }
+                        <span class="user_nick">@item.User.UserName</span>
+                        <span class="date">@item.Datetime.ToString("dd/MM/yyyy HH:mm:ss")</span>
+                    </div>
+
+                </div>
+                <div class="coment_text">
+                    @Html.Raw(item.Text)
+                </div>
+                <div class="commetn_options">
+                    @if (item.UserId == User.Identity.GetUserId())
+                    {
+                        @Ajax.RawActionLink("<p>Удалить</p>", "Delete", "PostComments", 
+                                                    new { id = item.Comment_Id }, 
+                                                    new AjaxOptions() { OnSuccess = "DeleteComment" }, 
+                                                    new { @class = "delete-answer" })
+                    }
+
+                    @Ajax.RawActionLink("<p>Ответить</p>", "Create", "PostComments",
+                                                  new { id = item.PersonId, ParentId = item.Comment_Id },
+                                                  new AjaxOptions() { OnSuccess = "AnswerSucces", InsertionMode = InsertionMode.InsertAfter },
+                                                  new { @class = "answer-link" })
+
+                    <p class="hide-answer-form" id="hide-answer">Закрыть</p>
+                    <div class='create-comment-container'>
+                    </div>
+
+                </div>
+            </div>
+            @if (item.Childrens != null)
+            {
+                if (item.Childrens.Any())
+                {
+
+
+                    @Ajax.RawActionLink("<div>Показать ответы </div>", "Index", "PostComments",
+                                                                         new { id = item.PersonId, ParentId = item.Comment_Id },
+                                                                         new AjaxOptions() { OnSuccess = "ChildCommentSucces" },
+                                                                         new { id = "child_link_text" });
+
+                }
+                else
+                {
+                    @Ajax.RawActionLink("", "Index", "PostComments",
+                                                                     new { id = item.PersonId, ParentId = item.Comment_Id },
+                                                                     new AjaxOptions() { OnSuccess = "ChildCommentSucces" },
+                                                                     new { style = "display:none", id = "child_link_text" })
+                }
+            }
+            else
+            {
+                @Ajax.RawActionLink("", "Index", "PostComments",
+                                                                 new { id = item.PersonId, ParentId = item.Comment_Id },
+                                                                 new AjaxOptions() { OnSuccess = "ChildCommentSucces" },
+                                                                 new { style = "display:none", id = "child_link_text" })
+            }
+
+        </li>
+
+        }
+    </ul>
+}
+@if (childFlag == 1)
+{
+    <div class="post-main-comment-form">
+        @Html.Partial("Create", new ViewDataDictionary { { "ParentId", 0 }, { "PersonId", persId } })
+    </div>
+}

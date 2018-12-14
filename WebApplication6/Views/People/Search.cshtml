@@ -1,0 +1,110 @@
+﻿@model WebApplication6.Models.SearchViewModel
+@using WebApplication6.Models;
+@{
+    List<PeoplesUsers> flag = ViewBag.flags;
+}
+<div class="search-card-deck">
+    @if (Model.Persons.Count() != 0)
+    {
+
+        foreach (var item in Model.Persons)
+        {
+            <div class="search-card">
+                <div class="search-card-body">
+                    <a href=@Url.Action("Details", "People", new { id = item.Id })>
+                        <img src='~/Content/@item.Foto' class="search-card-img-top" />
+                    </a>
+                    <div class="rate">
+                        @if (User.Identity.IsAuthenticated)
+                        {
+
+                            var temp = flag.FirstOrDefault(x => x.Person == item);
+
+                            if (temp != null)
+                            {
+
+                                if (temp.DisLike)
+                                {
+                                    @Ajax.RawActionLink(String.Format("<i class='fa fa-thumbs-up' id='Like{0}'></i>", @item.Id), "Like", "People", new { id = @item.Id },
+                                                                  new AjaxOptions { OnFailure = "OnFailure", OnSuccess = "LikeSucces" }, new { });
+                                    @Ajax.RawActionLink(String.Format("<i class='red fa fa-thumbs-down 'id='DisLike{0}'></i>", @item.Id), "DisLike", "People", new { id = @item.Id },
+                                                                 new AjaxOptions { OnFailure = "OnFailure", OnSuccess = "DisLikeSucces" }, new { });
+                                }
+                                else if (temp.Like)
+                                {
+                                    @Ajax.RawActionLink(String.Format("<i class='fa fa-thumbs-up green ' id='Like{0}'></i>", @item.Id), "Like", "People", new { id = @item.Id },
+                                                                  new AjaxOptions { OnFailure = "OnFailure", OnSuccess = "LikeSucces" }, new { });
+                                    @Ajax.RawActionLink(String.Format("<i class='fa fa-thumbs-down 'id='DisLike{0}'></i>", @item.Id), "DisLike", "People", new { id = @item.Id },
+                                                                 new AjaxOptions { OnFailure = "OnFailure", OnSuccess = "DisLikeSucces" }, new { });
+                                }
+                                else
+                                {
+                                    @Ajax.RawActionLink(String.Format("<i class='fa fa-thumbs-up' id='Like{0}'></i>", @item.Id), "Like", "People", new { id = @item.Id },
+                                                  new AjaxOptions { OnFailure = "OnFailure", OnSuccess = "LikeSucces" }, new { });
+                                    @Ajax.RawActionLink(String.Format("<i class='fa fa-thumbs-down 'id='DisLike{0}'></i>", @item.Id), "DisLike", "People", new { id = @item.Id },
+                                                 new AjaxOptions { OnFailure = "OnFailure", OnSuccess = "DisLikeSucces" }, new { });
+                                }
+                            }
+                            else
+                            {
+                                @Ajax.RawActionLink(String.Format("<i class='fa fa-thumbs-up' id='Like{0}'></i>", @item.Id), "Like", "People", new { id = @item.Id },
+                                                  new AjaxOptions { OnFailure = "OnFailure", OnSuccess = "LikeSucces" }, new { });
+                                @Ajax.RawActionLink(String.Format("<i class='fa fa-thumbs-down 'id='DisLike{0}'></i>", @item.Id), "DisLike", "People", new { id = @item.Id },
+                                                 new AjaxOptions { OnFailure = "OnFailure", OnSuccess = "DisLikeSucces" }, new { });
+                            }
+                        }
+                        else
+                        {
+                            @Ajax.RawActionLink(String.Format("<i class='fa fa-thumbs-up' id='Like{0}'></i>", @item.Id), "Like", "People", new { id = @item.Id },
+                                      new AjaxOptions { OnFailure = "OnFailure", OnSuccess = "LikeSucces" }, new { });
+                            @Ajax.RawActionLink(String.Format("<i class='fa fa-thumbs-down' id='DisLike{0}'></i>", @item.Id), "DisLike", "People", new { id = @item.Id },
+                                      new AjaxOptions { OnFailure = "OnFailure", OnSuccess = "DisLikeSucces" }, new { });
+                        }
+                    </div>
+                    <div class="count-body">
+                        @if (item.Rate <= 0)
+                        {
+                            <p class='count red' id=@String.Format("LikeCounter{0}", item.Id)>@item.Rate</p>
+                        }
+                        else
+                        {
+                            <p class='count green' id=@String.Format("LikeCounter{0}", item.Id)>@item.Rate</p>
+                        }
+                    </div>
+                </div>
+                <div class="search-info-desk">
+                    <div class="card-title">
+                        @Html.DisplayFor(Model => item.Name)
+                        @Html.DisplayFor(Model => item.Family)
+                        @Html.DisplayFor(Model => item.Surname)
+                    </div>
+                    <div class="position">
+                        @Html.DisplayFor(Model => item.Position.Name)
+                    </div>
+                    <a href=@Url.Action("Index", "Party", new { id = item.Id })>
+                        <div class="party"> @item.Party.Name</div>
+                    </a>
+                    <div class="post-tags">
+                        <ul>
+                            @foreach (var tag in item.Posts.SelectMany(x => x.Tags))
+                            {
+                                <li> @tag.Name </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+
+        }
+        <div class="pagination">
+            @Html.PageLinks(Model.PageInfo, x => Url.Action("Search", new { page = x }), new { })
+        </div>
+
+    }
+    else
+    {
+        <h2>Нечего не найдено</h2>
+    }
+
+</div>

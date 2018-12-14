@@ -1,0 +1,39 @@
+﻿@model WebApplication6.Models.RegisterViewModel
+@{
+    ViewBag.Title = "Регистрация";
+}
+@Html.ValidationSummary("", new { @class = "text-danger" })
+
+<div class="wrapper-regist">
+
+    @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class = "login_form", role = "form", enctype = "multipart/form-data" }))
+    {
+        <div id="dropZone">
+            Для загрузки, перетащите файл сюда.
+        </div>
+        <input type="file" id="file" name="file" style="display:none; visibility:hidden "  /> 
+        <div class="form-zone">
+            @Html.AntiForgeryToken()
+            <h2>@ViewBag.Title</h2>
+            <div>
+                @Html.ValidationMessageFor(m => m.Name, "", new { @class = "name-help" })
+            </div>
+            @Html.TextBoxFor(m => m.Name, new { @class = "inp", @placeholder = "Имя" })
+            <div>
+                @Html.ValidationMessageFor(m => m.Email, "", new { @class = "email-help" })
+            </div>
+            @Html.TextBoxFor(m => m.Email, new { @class = "inp", @placeholder = "Email" })
+            <div>
+                @Html.ValidationMessageFor(m => m.Password, "", new { @class = "password-help" })
+            </div>
+            @Html.PasswordFor(m => m.Password, new { @class = "inp", @placeholder = "Пароль" })
+            <div>
+                @Html.ValidationMessageFor(m => m.ConfirmPassword, "", new { @class = "confirm-help" })
+            </div>
+            @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "inp", @placeholder = "Подтвердите пароль" })
+
+            <input type="submit" class="enter-btn" value="Регистрация" />
+        </div>
+    }
+</div>
+

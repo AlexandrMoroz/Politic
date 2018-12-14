@@ -1,0 +1,16 @@
+﻿@model WebApplication6.Models.PersonIndexViewModel
+@using WebApplication6.Models;
+
+<div class="card-deck">
+    @foreach (var Mainitem in Model.PeoplePerPosition)
+    {
+    <h2 class="position-name"><a href="@Url.Action("Index", "Positions", new {id = Mainitem.Key.Id })">@Mainitem.Key.Name</a> </h2>
+    <div class="slider">
+        @foreach (var item in Mainitem.Value)
+        {
+            @Html.Partial("../People/Card", item);
+        }
+    </div>
+    }
+</div>
+

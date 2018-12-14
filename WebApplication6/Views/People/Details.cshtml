@@ -1,0 +1,92 @@
+﻿@model WebApplication6.Models.Person
+@using WebApplication6.Models;
+
+@{
+    ViewBag.Title = "Details";
+string UserAvatarName = Session["MainImg"] as string;
+}
+
+<div class="details">
+    <div class="detail-card">
+        <img class="card-img" src='~/Content/@Model.Foto' />
+        <div class="details-card-title" id="chart-container">
+            <script>
+                renderChart(@ViewBag.Like,@ViewBag.DisLike);
+            </script>
+        </div>
+        <ul class="tabs">
+            <li class="li-tab-active">@Ajax.RawActionLink("<div class='li-tabs'>Досье</div>", "Info", "People", 
+                                     new { id = Model.Id },
+                                     new AjaxOptions { OnBegin = "StartOnLoad", OnComplete = "EndOnLoad" }, 
+                                     new { id = "ajaxInfo" })
+            </li>
+            <li>
+                <div class='li-tabs' id="criminal" data_persId = '@Model.Id', data_tag = '@ViewBag.CriminalId'>Криминал</div>
+               
+            </li>
+            <li>
+                <div class='li-tabs' id="goodjob" data_persId='@Model.Id' , data_tag='@ViewBag.GoodJobId'>Добрые Дела</div>
+
+            </li>
+        </ul>
+    </div>
+    <div class="info">
+        <div class="tab-content" id="tab-content">
+            <div class="main-content" id="main-content"></div>
+            <div class="Loader">
+                <div class="circle"></div>
+                <div class="circle1"></div>
+                <p> Loading.... </p>
+            </div>
+            <h2 class="no-item" id="end">Больше нет постов</h2>
+        </div>
+    </div>
+    <div class="user-menu sidebar-right">
+    @if (User.Identity.IsAuthenticated)
+    {
+        <div class="user-options">
+            <div class="user-avatar">
+                <a href='@Url.Action("Index", "Manage")'>
+                    @if (UserAvatarName != null)
+                    {
+                        <img class="user_img" src="@Url.Action("../Content/Userimg/" + UserAvatarName)" />
+                    }
+                    else
+                    {
+                        <i class="fa fa-user-circle "></i>
+                    }
+                </a>
+            </div>
+            <a href='@Url.Action("Index", "Manage")'>
+                <span class="user_nick">@ViewBag.UserName</span>
+            </a>
+        </div>
+            <a href="@Url.Action("../Posts/Create", new { TagId = @ViewBag.CriminalId, peopleId = Model.Id })"><div class="create-post">Добавить криминалa</div></a>
+            <a href="@Url.Action("../Posts/Create", new { TagId = @ViewBag.GoodJobId, peopleId = Model.Id })"><div class="create-post">Добавить хороших дел</div></a>
+
+    }
+    else
+    {
+            <div class="login_block" id="SingInBlock" style="display: block;">
+                <div class="menu-header">
+                    Вход
+                </div>
+                @using (Html.BeginForm("Login", "Account", new { ReturnUrl = this.Request.RawUrl }, FormMethod.Post, new { @class = "form", role = "form" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <label for="login_name">Логин:</label>
+                    <input class="inp" type="text" name="Email" id="login_name">
+                    <label for="login_password">Пароль: </label>
+                    <input class="inp" type="password" name="Password" id="login_password">
+                    <button class="enter-btn" onclick="submit();" type="submit" title="Войти">Войти</button>
+                    <input name="login" type="hidden" id="login" value="submit">
+                    <div class="reg-link">@Html.ActionLink("Регистрация", "Register", "Account")</div>
+                }
+                <div class="social_login cf">
+                    @*@Html.Partial("_ExternalLoginsListPartial", new ExternalLoginListViewModel { ReturnUrl = ViewBag.ReturnUrl })*@
+                </div>
+            </div>
+
+    }
+        </div>
+</div>

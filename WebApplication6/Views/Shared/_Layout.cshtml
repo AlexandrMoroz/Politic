@@ -1,0 +1,47 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    @RenderSection("scripts", required: false)
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/scripts")
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/highcharts-more.js"></script>
+    <script src="https://code.highcharts.com/modules/solid-gauge.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+    <script src="https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.js"></script>
+</head>
+<body>
+
+    <header>
+        <a href='@Url.Action("Index","People")'>
+            <div class="MenuItem Icon">ICON</div>
+        </a>
+        <a href='@Url.Action("Top", "People")'>
+            <div class="TOP MenuItem ">Top</div>
+        </a>
+        <a href='@Url.Action("Criminal", "People")'>
+            <div class="MenuItem Criminal">Criminal</div>
+        </a>
+        <div class="searchblock">
+            @using (@Html.BeginForm("PeopleSearch", "Search", FormMethod.Get))
+            {
+                <input name="SearchString" type="text" value="Поиск" onfocus='if (this.value == "Поиск") { this.value=""; }' onblur='if (this.value == "") { this.value="Поиск"; }' class="searchform">
+                <input name="page" type="hidden" value="1">
+            }
+        </div>
+        <div class="menu-overlay"></div>
+        @Html.Partial("_LoginPartial")
+    </header>
+    <div class="content">
+
+        @RenderBody()
+
+        <footer></footer>
+    </div>
+
+</body>
+</html>

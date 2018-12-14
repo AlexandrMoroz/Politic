@@ -1,0 +1,23 @@
+﻿@model PagedList.IPagedList<Person>
+@using PagedList.Mvc;
+@using WebApplication6.Models;
+@{
+
+}
+<div class="card-deck-position">
+    <div class="row">
+        @foreach (var item in Model.Take(4))
+        {
+            @Html.Partial("../People/Card", item);
+        }
+    </div>
+    <div class="row">
+        @foreach (var item in Model.Skip(4))
+        {
+            @Html.Partial("../People/Card", item);
+        }
+    </div>
+</div>
+<div class="pagination">
+    @Html.PagedListPager(Model, page => Url.Action("Index", new { page }))
+</div>

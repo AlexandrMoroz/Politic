@@ -1,0 +1,25 @@
+﻿@model IEnumerable<WebApplication6.Models.Tag>
+@using WebApplication6.Models;
+@Scripts.Render("~/Scripts/Tags.js")
+<div class="tags-wrapper">
+    <div class="post-tags">
+        <ul>
+            @foreach (var item in Model)
+            {
+                <li>
+                    <div class="tag-name">
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </div>
+                    <div class="tag-option">
+                        @using (Ajax.BeginForm("Delete", "Tags", new { id = item.Id },
+                        new AjaxOptions { OnSuccess = "OnTagDelete" }, new { @class = "form-tag" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <i class='fa fa-times' aria-hidden='true'></i>
+                        }
+                    </div>
+                </li>
+            }
+        </ul>
+    </div>
+</div>

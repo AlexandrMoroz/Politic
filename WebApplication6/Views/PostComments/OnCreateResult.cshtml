@@ -1,0 +1,51 @@
+﻿@using Microsoft.AspNet.Identity;
+@using WebApplication6.Models;
+
+@model WebApplication6.Models.PostComment
+@{
+    Layout = null;
+}
+<li>
+    <div class="comment">
+        <div class="coment_header">
+            <div class="comment_user">
+                @if (Model.User.MainImage == null)
+                {
+                    <i class="fa fa-user-circle" aria-hidden="true"></i>
+                }
+                else
+                {
+                    <img class="avatar_small" src="@Url.Action("../Content/Userimg/" + Model.User.MainImage)" />
+                }
+                <span class="user_nick">@Model.User.UserName</span>
+                <span class="date">@Model.Datetime.ToString("dd/MM/yyyy HH:mm:ss")</span>
+            </div>
+
+        </div>
+        <div class="coment_text">
+            <div class="coment_text">
+                @Html.Raw(Model.Text);
+            </div>
+        </div>
+        <div class="commetn_options">
+            @if (Model.UserId == User.Identity.GetUserId())
+            {
+                @Ajax.RawActionLink("<p>Удалить</p>", "Delete", "PeopleComments", new { id = Model.Comment_Id }, new AjaxOptions() { OnSuccess = "DeleteComment" }, new { @class = "delete-answer" })
+            }
+
+            @Ajax.RawActionLink("<p>Ответить</p>", "Create", "PeopleComments",
+                                     new { id = Model.PersonId, ParentId = Model.Comment_Id },
+                                     new AjaxOptions() { OnSuccess = "AnswerSucces", InsertionMode = InsertionMode.InsertAfter },
+                                     new { @class = "answer-link" })
+
+            <p class="hide-answer-form" id="hide-answer">Закрыть</p>
+            <div class='create-comment-container'>
+            </div>
+
+        </div>
+    </div>
+    @Ajax.RawActionLink("", "Index", "PeopleComments",
+                                                new { id = Model.PersonId, ParentId = Model.Comment_Id },
+                                                new AjaxOptions() { OnSuccess = "ChildCommentSucces" },
+                                                new { style = "display:none", id = "child_link_text" })
+</li>

@@ -1,0 +1,30 @@
+﻿@model WebApplication6.Models.Person
+@{
+    Layout = "";
+}
+<div class="info-content">
+    <h1>@Model.Family @Model.Name @Model.Surname </h1>
+    <p> Дата рождения:<span class="color-gray"> @Model.Date.ToShortDateString()</span></p>
+    <p> Родился:<span class="color-gray"> @Model.City.Name</span></p>
+    <div> Партии:<span class="color-orange"> <a href="@Url.Action("PartySearch","Search",new {id = Model.Party.Id})">@Model.Party.Name</a></span></div>
+    <div> Должность: <span class="color-orange"><a href="@Url.Action("PositionSearch","Search", new {id = Model.Position.Id })"> @Model.Position.Name</a></span></div>
+    <p> Путь к власти: </p>
+    @foreach (var item in ViewBag.WayToPolit)
+    {
+        <p><span class="color-gray">item</span></p>
+    }
+</div>
+<div class="comments">
+    @if (User.Identity.IsAuthenticated)
+    {
+        /*var a = */
+        @Html.Action("Index", "PeopleComments", new { id = Model.Id });
+            @*var str = a.ToHtmlString();
+            @Html.Raw(str)*@
+    }
+    else
+    {
+        <h2 class="no-item">Пожалуйста введите логин и пароль</h2>   
+    }
+</div>
+

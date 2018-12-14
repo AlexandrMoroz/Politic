@@ -1,0 +1,24 @@
+﻿@model WebApplication6.Models.PostComment
+@{
+    Layout = null;
+    int ParentId = ViewBag.ParentId;
+    int personId = ViewBag.PersonId;
+}
+
+@using (Ajax.BeginForm("Create",new AjaxOptions() {  OnSuccess =  "CreateComment" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="comment-form">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="comment-textarea">
+            @Html.TextAreaFor(model => model.Text, new {  @class = "comment-text-input textAreaId" })
+        </div>
+        @Html.Hidden("ParentId", ParentId)
+        @Html.Hidden("PersonId", personId)
+        <div class="comment-form-submit">
+            <input type="submit" value="Create" class="comment-enter-btn" />
+        </div>
+    </div>
+}
+
+

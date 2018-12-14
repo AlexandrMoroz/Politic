@@ -1,0 +1,60 @@
+﻿@using WebApplication6.Models;
+@{
+    string img = Session["MainImg"] as string;
+}
+
+@if (Request.IsAuthenticated)
+{
+    using(Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
+    {
+        @Html.AntiForgeryToken()
+                 
+           <div class="Account">
+            <a href='@Url.Action("Index", "Manage")'>
+            <div class="MenuItem user-avatar">
+                @if (img!=null)
+                {
+                    <img class="user_img" src="@Url.Action("../Content/Userimg/" + img)"/>
+                }else
+                {
+                    <i class="fa fa-user-circle "></i>
+                }
+               </div>
+            </a>
+            <a href="javascript:document.getElementById('logoutForm').submit()">
+                <div class="MenuItem">Выйти</div>
+            </a>
+        </div>
+    }
+}
+else
+{
+    <div class="Account">
+        <a href='@Url.Action( "Register", "Account")'> <div class="MenuItem">SING UP</div></a>
+        <div class="MenuItem" id="SingIn">SING IN</div>
+    </div>
+    <div class=" login_block" id="SingInBlock" style="display: block;">
+        <div class="menu-header">
+            Вход
+            <button class="menu-close" id="MenuClose"></button>
+        </div>
+        @using (Html.BeginForm("Login", "Account", new { ReturnUrl= this.Request.RawUrl}, FormMethod.Post, new { @class = "form", role = "form" }))
+        {
+            @Html.AntiForgeryToken()
+            <label for="login_name">Логин:</label>
+            <input class="inp" type="text" name="Email" id="login_name">
+            <label for="login_password">Пароль: </label>
+            <input class="inp" type="password" name="Password" id="login_password">
+            <div>
+                <input class="ch_box_save" type="checkbox" name="RememberMe" id="login_not_save" value="1">
+                <p class="not_save_label" for="login_not_save">Чужой компьютер</p>
+            </div>
+                <button class="enter-btn" onclick="submit();" type="submit" title="Войти">Войти</button>
+                <input name="login" type="hidden" id="login" value="submit">
+                <div class="reg-link">@Html.ActionLink("Регистрация", "Register", "Account")</div>
+        }
+        <div class="social_login cf">
+            @*@Html.Partial("_ExternalLoginsListPartial", new ExternalLoginListViewModel { ReturnUrl = ViewBag.ReturnUrl })*@
+        </div>
+    </div>
+}

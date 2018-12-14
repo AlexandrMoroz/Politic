@@ -1,0 +1,59 @@
+﻿@model  WebApplication6.Models.Person
+@using WebApplication6.Models;
+
+@{
+    List<PeoplesUsers> flag = ViewBag.flags;
+    var colorDislike = "";
+    var colorLike = "";
+}
+
+<div class="card">
+    <div class="card-body">
+        <a href=@Url.Action("Details", "People", new { id = Model.Id })>
+            <img src='~/Content/@Model.Foto' class="card-img-top" />
+        </a>
+        <div class="rate">
+            @if (User.Identity.IsAuthenticated)
+            {
+
+                var temp = flag.FirstOrDefault(x => x.Person == Model);
+
+                if (temp != null)
+                {
+                    if (temp.DisLike)
+                    {
+                        colorDislike = "red";
+                    }
+                    else if (temp.Like)
+                    {
+                        colorLike = "green";
+                    }
+                }
+            }
+            @Ajax.RawActionLink(String.Format("<i class='fa fa-thumbs-up {0}' id='Like{1}'></i>", colorLike, Model.Id), "Like", "People", new { id = Model.Id },
+                    new AjaxOptions { OnFailure = "OnFailure", OnSuccess = "LikeSucces" }, new { });
+            @Ajax.RawActionLink(String.Format("<i class='fa fa-thumbs-down {0}' id='DisLike{1}'></i>", colorDislike, Model.Id), "DisLike", "People", new { id = Model.Id },
+                    new AjaxOptions { OnFailure = "OnFailure", OnSuccess = "DisLikeSucces" }, new { });
+
+        </div>
+        <div class="count-body">
+            @if (Model.Rate <= 0)
+            {
+                <p class='count red' id=@String.Format("LikeCounter{0}", Model.Id)>@Model.Rate</p>
+            }
+            else
+            {
+                <p class='count green' id=@String.Format("LikeCounter{0}", Model.Id)>@Model.Rate</p>
+            }
+        </div>
+        <div class="card-title">
+            @Html.DisplayFor(Model => Model.Name)
+            @Html.DisplayFor(Model => Model.Family)
+            @Html.DisplayFor(Model => Model.Surname)
+        </div>
+        <div class="position">
+            @Html.DisplayFor(Model => Model.Position.Name)
+        </div>
+    </div>
+</div>
+

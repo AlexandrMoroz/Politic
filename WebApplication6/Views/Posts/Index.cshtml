@@ -1,0 +1,62 @@
+﻿@model IEnumerable<WebApplication6.Models.Post>
+@{
+    Layout = null;
+    string postType = @ViewBag.postType;
+}
+@if (Model.Count() != 0)
+{
+    foreach (var item in Model)
+    {
+        <li>
+            <a href="@Url.Action("Details","Posts",new {id=item.PostId, TagId=ViewBag.TagId})"><h2 class="post-header">@item.Title</h2></a>
+            <div class="post-option">
+                @if (@item.User.MainImage == null)
+                {
+                    <i class="fa fa-user-circle" aria-hidden="true"></i>
+                }
+                else
+                {
+                    <img class="avatar_small" src="@Url.Action("../Content/Userimg/" + @item.User.MainImage)" />
+                }
+                <span class="user_nick"> @item.User.UserName </span> <span class="date">@item.PostedOn.ToString("dd/MM/yyyy HH:mm:ss")</span>
+            </div>
+            <div class="post-description">
+                <div class="post-description-content">
+                    @foreach (var descitem in item.Description)
+                    {
+                        if (descitem.Type == "img")
+                        {
+                            <img src="@Url.Action(string.Format("../Content/PostContent/{0}/{1}",item.PostFile, descitem.Content))" class="post-img" />
+                        }
+                        else if (descitem.Type == "text")
+                        {
+                            <p class="post-text">@descitem.Content</p>
+                        }
+                    }
+                </div>
+            </div>
+            <div class="post-tags">
+                <ul>
+                    @foreach (var tag in item.Tags)
+                    {
+                        if (tag.Name != postType)
+                        {
+                            <li>
+                                <a href="@Url.Action("TagSearch","Search",new {id = tag.Id})">
+                                    <span class="color-gray">
+                                        @tag.Name
+                                    </span>
+                                </a>
+                            </li>
+                        }
+                    }
+                </ul>
+            </div>
+        </li>
+    }
+
+}
+else
+{
+    <h2 class="no-item">Здесь пока что нет ни одного поста</h2>
+}

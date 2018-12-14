@@ -1,0 +1,73 @@
+﻿@using WebApplication6.Models;
+@model WebApplication6.Models.Post
+@{ 
+    string postType = @ViewBag.postType;
+    string message = @ViewBag.message;
+}
+<script>
+ 
+</script>
+<div class="post-wrapper">
+    @if (message != null)
+    {
+        <p class="text-success">@message</p>
+    }
+    @Html.RawActionLink("<h2 class='go-back' ><i class='fa  fa-angle-double-left'></i>Назад</h2>", "Details", "People", new { id = ViewBag.personId }, new { })
+    <h2 class="post-header">@Model.Title</h2>
+    <div class="post-option">
+        @if (Model.User.MainImage == null)
+        {
+            <i class="fa fa-user-circle" aria-hidden="true"></i>
+        }
+        else
+        {
+            <img class="avatar_small" src="@Url.Action("../Content/Userimg/" + Model.User.MainImage)" />
+        }
+        <span class="user_nick"> @Model.User.UserName </span> <span class="date"> @Model.PostedOn.ToString("dd/MM/yyyy HH:mm:ss")</span>
+    </div>
+    <div class="post-description">
+        <div class="post-description-content">
+            @foreach (var descitem in Model.Description)
+            {
+                if (descitem.Type == "img")
+                {
+                    <img src="@string.Format("/Content/PostContent/{0}/{1}",Model.PostFile, descitem.Content)" class="post-img" />
+                }
+                else if (descitem.Type == "text")
+                {
+                    <p class="post-text">@descitem.Content</p>
+                }
+            }
+        </div>
+    </div>
+    <div class="post-tags">
+        <ul>
+            @foreach (var tag in Model.Tags)
+            {
+                if (tag.Name != postType)
+                {
+                    <li>
+                        <a href="@Url.Action("TagSearch","Search",new {id = tag.Id})">
+                            <span class="color-gray">
+                                @tag.Name
+                            </span>
+                        </a>
+                    </li>
+                }
+
+            }
+        </ul>
+    </div>
+    <div class="comments">
+
+        @if (User.Identity.IsAuthenticated)
+        {
+            @Html.Action("Index", "PostComments", new { id = ViewBag.personId });
+
+        }
+        else
+        {
+            <div class="no-item">Пожалуйста введите логин и пароль</div>
+        }
+    </div>
+</div>

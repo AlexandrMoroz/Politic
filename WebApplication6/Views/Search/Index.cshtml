@@ -1,0 +1,81 @@
+﻿@model PagedList.IPagedList<Person>
+@using PagedList.Mvc;
+@using WebApplication6.Models;
+@{
+    List<PeoplesUsers> flag = ViewBag.flags;
+    var colorDislike = "";
+    var colorLike = "";
+}
+<div class="search-card-deck">
+    @if (Model.Count != 0)
+    {
+
+        foreach (var item in Model)
+        {
+            <div class="search-card">
+                <div class="search-card-body">
+                    <a href=@Url.Action("Details", "People", new { id = item.Id })>
+                        <img src='~/Content/@item.Foto' class="search-card-img-top" />
+                    </a>
+                    <div class="rate">
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            var temp = flag.FirstOrDefault(x => x.Person == Model);
+                            if (temp != null)
+                            {
+                                if (temp.DisLike)
+                                {
+                                    colorDislike = "red";
+                                }
+                                else if (temp.Like)
+                                {
+                                    colorLike = "green";
+                                }
+                            }
+                        }
+                        @Ajax.RawActionLink(String.Format("<i class='fa fa-thumbs-up {0}' id='Like{1}'></i>", colorLike, item.Id), "Like", "People", new { id = item.Id },
+                                new AjaxOptions { OnFailure = "OnFailure", OnSuccess = "LikeSucces" }, new { });
+                        @Ajax.RawActionLink(String.Format("<i class='fa fa-thumbs-down {0}' id='DisLike{1}'></i>", colorDislike, item.Id), "DisLike", "People", new { id = item.Id },
+                                new AjaxOptions { OnFailure = "OnFailure", OnSuccess = "DisLikeSucces" }, new { });
+
+                    </div>
+                    <div class="count-body">
+                        @if (item.Rate <= 0)
+                        {
+                            <p class='count red' id=@String.Format("LikeCounter{0}", item.Id)>@item.Rate</p>
+                        }
+                        else
+                        {
+                            <p class='count green' id=@String.Format("LikeCounter{0}", item.Id)>@item.Rate</p>
+                        }
+                    </div>
+                </div>
+                <div class="search-info-desk">
+                    <div class="card-title">
+                        @Html.DisplayFor(Model => item.Name)
+                        @Html.DisplayFor(Model => item.Family)
+                        @Html.DisplayFor(Model => item.Surname)
+                    </div>
+                    <div class="position">
+                        @Html.DisplayFor(Model => item.Position.Name)
+                    </div>
+
+                    <div class="color-orange">
+                        <a href=@Url.Action("PartySearch", "Search", new { id = item.Party.Id })>
+                            @item.Party.Name
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        }
+        <div class="pagination">
+            @Html.PagedListPager(Model, page => Url.Action(ViewBag.returnAction, new { page }))
+        </div>
+
+    }
+    else
+    {
+        <h2>Ничего не найдено</h2>
+    }
+</div>

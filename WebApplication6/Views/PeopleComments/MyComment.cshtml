@@ -1,0 +1,76 @@
+﻿@model IEnumerable<WebApplication6.Models.Comment>
+@using WebApplication6.Models;
+@using Microsoft.AspNet.Identity;
+@{
+    var message = ViewBag.Message;
+}
+
+
+@if (message == null)
+{
+    <div class="tab-content" id="tab-content">
+        @foreach (var item in Model)
+        {
+            <div class="comment">
+                <div class="coment_header">
+                    <div class="comment_user">
+                        @if (item.User.MainImage == null)
+                        {
+                            <i class="fa fa-user-circle" aria-hidden="true"></i>
+                        }
+                        else
+                        {
+                            <img class="avatar_small" src="@Url.Action("../Content/Userimg/"+ @item.User.MainImage)" />
+                        }
+                        <span class="user_nick">@item.User.UserName</span>
+                        <span class="coment_date">@item.Datetime.ToShortDateString()</span>
+                    </div>
+
+                </div>
+                <div class="coment_text">
+                    @item.Text
+                </div>
+                <div class="commetn_options">
+                    @if (item.UserId == User.Identity.GetUserId())
+                    {
+                        @Ajax.RawActionLink("<p>Удалить</p>", "Delete", "Comments", new { id = item.Comment_Id }, new AjaxOptions() { OnSuccess = "DeleteComment" }, new { @class = "delete-answer" })
+                    }
+
+                    @Ajax.RawActionLink("<p>Ответить</p>", "Create", "Comments",
+                                                  new { id = item.PersonId, ParentId = item.Comment_Id },
+                                                  new AjaxOptions() { UpdateTargetId = @String.Concat("answer", item.Comment_Id), OnSuccess = "AnswerSucces(" + item.Comment_Id + ")", InsertionMode = InsertionMode.InsertAfter },
+                                                  new { @id = @String.Concat("answer-link", item.Comment_Id), @class = "answer-link" })
+
+                    <p class="hide-answer-form" id="@String.Concat("hide-answer", item.Comment_Id)" onclick="HideAnswerForm(@item.Comment_Id)">Закрыть</p>
+                    <div id='@String.Concat("answer",item.Comment_Id)'>
+                    </div>
+
+                </div>
+            </div>
+            if (item.Childrens.Any())
+            {
+                <span class="i-span">
+                    <i class='fa-plus-square-o fa' aria-hidden='true' id='@String.Concat("plus", item.Comment_Id)' onclick="child_click(@item.Comment_Id)"></i>
+                </span>
+                @Ajax.RawActionLink("<div id='Child_link_text" + @item.Comment_Id + "'>Показать ответы </div>", "Index", "Comments",
+                                                             new { id = item.PersonId, ParentId = item.Comment_Id },
+                                                             new AjaxOptions() { UpdateTargetId = @String.Concat("child", item.Comment_Id), OnSuccess = "ChildCommentSucces(" + item.Comment_Id + ")" },
+                                                             new { });
+
+                <div class="child_comment" id="@String.Concat("child", item.Comment_Id)"></div>
+            }
+
+
+        }
+
+    </div>
+}
+else
+{
+    <ul class="text-danger">
+        <li>@message</li>
+    </ul>
+}
+@Scripts.Render("~/Scripts/Comment.js")
+
+

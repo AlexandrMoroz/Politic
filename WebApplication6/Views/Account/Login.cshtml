@@ -1,0 +1,41 @@
+﻿@using WebApplication6.Models
+@model LoginViewModel
+@{
+    ViewBag.Title = "Выполнить вход";
+}
+@Html.ValidationSummary(true, "", new { @class = "text-danger" })
+<div class="wrapper">
+    <h2>@ViewBag.Title.</h2>
+        @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form", role = "form" }))
+        { 
+            @Html.AntiForgeryToken()
+            <label for="login_name">Логин:</label>
+                <input class="inp" type="text" name="Email" id="login_name">
+                <label for="login_password">Пароль: </label>
+                <input class="inp" type="password" name="Password" id="login_password">
+                <div>
+                    <input class="ch_box_save" type="checkbox" name="RememberMe" id="login_not_save" value="1">
+                    <label class="not_save_label" for="login_not_save"><span></span>Чужой компьютер</label>
+                </div>
+                <button class="enter-btn" onclick="submit();" type="submit" title="Войти">Войти</button>
+                <input name="login" type="hidden" id="login" value="submit">
+                <div class="reg-link">@Html.ActionLink("Регистрация", "Register", "Account")</div>
+        }
+        <div class="social_login cf">
+           @*@Html.Partial("_ExternalLoginsListPartial", new ExternalLoginListViewModel { ReturnUrl = ViewBag.ReturnUrl })*@
+        </div>
+    </div>
+   
+    @* Включите, когда будет включено подтверждение учетной записи для функции сброса пароля
+        <p>
+            @Html.ActionLink("Забыли пароль?", "ForgotPassword")
+        </p>*@
+
+
+
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

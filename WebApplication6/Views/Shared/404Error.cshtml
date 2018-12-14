@@ -1,0 +1,28 @@
+﻿
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    @Styles.Render("~/Content/css.css")
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+</head>
+<body>
+    <div class="page-404-wrapper l-padding">
+        <div class="dtable">
+            <div class="dtrow row-text">
+                <div class="dtcell">
+                    <h1 class="page-404-title">@ViewBag.StatusCode</h1>
+                    <h4 class="page-404-sub-title">PAGE NOT FOUND</h4>
+                    <p class="page-404-text">
+                        The link you clicked may be broken or the page may
+                        have been removed.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
