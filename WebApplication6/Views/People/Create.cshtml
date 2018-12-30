@@ -7,48 +7,49 @@
             @Html.AntiForgeryToken()
 
             <div class="people-create-form">
-                <div id="dropZone">
-                    Для загрузки, перетащите файл сюда.
-                </div>
-                <input type="file" id="file" name="file" style="display:none; visibility:hidden " />
                 @Html.ValidationSummary(true, "", new { @class = "text-danger" })
                 <ul class="form-group">
-                    <li>
-                        @Html.ValidationMessageFor(model => model.Name, "", new { @class = "name-help" })
-                        @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "inp", @placeholder = "Имя" } })
-                    </li>
-                    <li>
-                        @Html.ValidationMessageFor(model => model.Family, "", new { @class = "family-help" })
-                        @Html.EditorFor(model => model.Family, new { htmlAttributes = new { @class = "inp", @placeholder = "Фамилия" } })
-                    </li>
-                    <li>
-                        @Html.ValidationMessageFor(model => model.Surname, "", new { @class = "surname-help" })
-                        @Html.EditorFor(model => model.Surname, new { htmlAttributes = new { @class = "inp", @placeholder = "Отчество" } })
-                    </li>
-                    <li>
-                        <input type="date" id="people-date" class="inp" name="Date" />
-                    </li>
-                    <li>
-                        @Html.ValidationMessageFor(model => model.WayToPolitics, "", new { @class = "politic-text" })
-                        @Html.TextArea("WayToPolitics", "", new { @class = "people-text-input", @placeholder = "Биография" })
-                    </li>
-                    <li>
-                        @Html.ValidationMessageFor(model => model.City, "", new { @class = "surname-help" })
-                        @Html.DropDownList("Cities", new SelectList(ViewBag.Cities, "Id", "Name"), new { @class = "cities-dropdown inp" })
-                    </li>
-                    <li>
-                        @Html.ValidationMessageFor(model => model.City, "", new { @class = "surname-help" })
-                        @Html.DropDownList("Cities", new SelectList(ViewBag.Cities, "Id", "Name"), new { @class = "cities-dropdown inp" })
-                    </li>
-                    <li>
-                        @Html.ValidationMessageFor(model => model.Party, "", new { @class = "surname-help" })
-                        @Html.DropDownList("Parties", new SelectList(ViewBag.Parties, "Id", "Name"), new { @class = "cities-dropdown inp" })
-                    </li>
-                    <li>
-                        <input type="submit" value="Create" class="enter-btn" />
-                    </li>
+                    <div class="row">
+                        <div id="dropZone">
+                            Для загрузки, перетащите файл сюда.
+                        </div>
+                        <input type="file" id="file" name="Foto" style="display:none; visibility:hidden" />
+                    </div>
+                    <div class="row">
+                        <li>
+                            @Html.ValidationMessageFor(model => model.Name, "", new { @class = "name-help" })
+                            @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "inp", @placeholder = "Имя" } })
+                        </li>
+                        <li>
+                            @Html.ValidationMessageFor(model => model.Family, "", new { @class = "family-help" })
+                            @Html.EditorFor(model => model.Family, new { htmlAttributes = new { @class = "inp", @placeholder = "Фамилия" } })
+                        </li>
+                        <li>
+                            @Html.ValidationMessageFor(model => model.Surname, "", new { @class = "surname-help" })
+                            @Html.EditorFor(model => model.Surname, new { htmlAttributes = new { @class = "inp", @placeholder = "Отчество" } })
+                        </li>
+
+                    </div>
+                    <div class="row">
+                        <li>
+                            @Html.ValidationMessageFor(model => model.Date, "", new { @class = "politic-text" })
+                            <input type="date" id="people-date" class="inp" name="Date" />
+                        </li>
+                        <li>
+                            @Html.ValidationMessageFor(model => model.City, "", new { @class = "surname-help" })
+                            @Html.ListBox("Cities", new SelectList(ViewBag.Cities, "Id", "Name"), new { @class = "cities-dropdown inp" })
+                        </li>
+                        <li>
+                            @Html.ValidationMessageFor(model => model.Party, "", new { @class = "surname-help" })
+                            @Html.ListBox("Parties", new SelectList(ViewBag.Parties, "Id", "Name"), new { @class = "cities-dropdown inp" })
+                        </li>
+                    </div>
                 </ul>
-                
+                @Html.ValidationMessageFor(model => model.WayToPolitics, "", new { @class = "politic-text" })
+                @Html.TextArea("WayToPolitics", "", new { @class = "people-text-input", @placeholder = "Биография" })
+
+                <input type="submit" value="Create" class="enter-btn" />
+
             </div>
         }
     }

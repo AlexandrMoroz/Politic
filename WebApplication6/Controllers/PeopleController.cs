@@ -1,14 +1,11 @@
 ﻿using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
-using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Linq;
-using System.Net;
 using System.Web;
 using System.Web.Mvc;
-using System.Web.Security;
 using WebApplication6.Models;
 
 namespace WebApplication6.Controllers
@@ -24,12 +21,11 @@ namespace WebApplication6.Controllers
         {
             this.UserManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(this.db));
         }
-
         // GET: People
         public ActionResult Index()
         {
-            var AllowPositions = new List<string>() {"Народный депутат", "Министр", "Помошник Министра", "Мэр", "МВД" };
-            var positions  = db.Positions.Where(x => AllowPositions.Contains(x.Name)).ToList();
+            var AllowPositions = new List<string>() { "Народный депутат", "Министр", "Помошник Министра", "Мэр", "МВД" };
+            var positions = db.Positions.Where(x => AllowPositions.Contains(x.Name)).ToList();
             var PeoplesPerPos = new Dictionary<Position, List<Person>>();
             foreach (var item in positions)
             {
@@ -48,7 +44,6 @@ namespace WebApplication6.Controllers
             return View(new PersonIndexViewModel() { PeoplePerPosition = PeoplesPerPos });
 
         }
-
         public ActionResult Top(int page = 1)
         {
             int pageSize = 8; // количество объектов на страницу
@@ -66,19 +61,20 @@ namespace WebApplication6.Controllers
         public ActionResult Details(int id)
         {
 
-            Person person = db.Persons.FirstOrDefault(x=>x.Id == id);
+            Person person = db.Persons.FirstOrDefault(x => x.Id == id);
             if (person == null)
             {
                 throw new HttpException(404, "NotFound");
             }
-            var temp=db.PeopleUsers.FirstOrDefault(x => x.Person.Id == id);
-            if (temp != null) {
+            var temp = db.PeopleUsers.FirstOrDefault(x => x.Person.Id == id);
+            if (temp != null)
+            {
                 ViewBag.Like = db.PeopleUsers.Where(x => x.Person.Id == id).Sum(x => x.Like ? 1 : 0);
                 ViewBag.DisLike = db.PeopleUsers.Where(x => x.Person.Id == id).Sum(x => x.DisLike ? 1 : 0);
             }
             else
             {
-                ViewBag.Like =0;
+                ViewBag.Like = 0;
                 ViewBag.DisLike = 0;
             }
             ViewBag.CriminalId = db.Tags.FirstOrDefault(x => x.Name == "криминал").Id;
@@ -90,11 +86,36 @@ namespace WebApplication6.Controllers
             }
             return View(person);
         }
+        public ActionResult Info(int id)
+        {
+            Person person = db.Persons.FirstOrDefault(x => x.Id == id);
+            if (person == null)
+            {
+                throw new HttpException(404, "Not found");
+            }
+
+            if (person.WayToPolitics != null)
+            {
+                if (person.WayToPolitics != "")
+                {
+                    ViewBag.WayToPolit = person.WayToPolitics.Split('\n');
+                }
+                else
+                {
+                    ViewBag.WayToPolit = "";
+                }
+            }
+            else
+            {
+                ViewBag.WayToPolit = "";
+            }
+            return View(person);
+        }
 
         // GET: People/Create
+        [Authorize(Roles = "Admin")]
         public ActionResult Create()
         {
-
             ViewBag.Cities = db.Cities.Select(x => new { Id = x.Id, Name = x.Name }).ToList();
             ViewBag.Parties = db.Parties.Select(x => new { Id = x.Id, Name = x.Name }).ToList();
             return View();
@@ -103,20 +124,21 @@ namespace WebApplication6.Controllers
         // POST: People/Create
         // Чтобы защититься от атак чрезмерной передачи данных, включите определенные свойства, для которых следует установить привязку. Дополнительные 
         // сведения см. в статье https://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,Name,Family,Surname,Date,Foto,Rate")] Person person)
+        public ActionResult Create([Bind(Include = "Id,Name,Family,Surname,Date,Foto")] Person person)
         {
             if (ModelState.IsValid)
             {
+                person.Submitted = UserManager.FindById(User.Identity.GetUserId());
                 db.Persons.Add(person);
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-
             return View(person);
         }
-
+        [Authorize(Roles = "Admin, Moderator")]
         // GET: People/Edit/5
         public ActionResult Edit(int? id)
         {
@@ -132,9 +154,11 @@ namespace WebApplication6.Controllers
             return View(person);
         }
 
+
         // POST: People/Edit/5
         // Чтобы защититься от атак чрезмерной передачи данных, включите определенные свойства, для которых следует установить привязку. Дополнительные 
         // сведения см. в статье https://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Admin, Moderator")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "Id,Name,Family,Surname,Date,Foto,Rate")] Person person)
@@ -149,12 +173,9 @@ namespace WebApplication6.Controllers
         }
 
         // GET: People/Delete/5
-        public ActionResult Delete(int? id)
+        [Authorize(Roles = "Admin, Moderator")]
+        public ActionResult Delete(int id)
         {
-            if (id == null)
-            {
-                throw new HttpException(404, "Not found");
-            }
             Person person = db.Persons.Find(id);
             if (person == null)
             {
@@ -163,6 +184,7 @@ namespace WebApplication6.Controllers
             return View(person);
         }
         // POST: People/Delete/5
+        [Authorize(Roles = "Admin, Moderator")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
@@ -172,6 +194,7 @@ namespace WebApplication6.Controllers
             db.SaveChanges();
             return RedirectToAction("Index");
         }
+
         [Auth]
         [AcceptVerbs(HttpVerbs.Get)]
         public JsonResult Like(int id)
@@ -217,6 +240,7 @@ namespace WebApplication6.Controllers
             db.SaveChanges();
             return Json(new { rate = people.Rate, flag = 1, id = id }, JsonRequestBehavior.AllowGet);
         }
+
         [Auth]
         [AcceptVerbs(HttpVerbs.Get)]
         public JsonResult DisLike(int id)
@@ -228,7 +252,7 @@ namespace WebApplication6.Controllers
             }
             else if (!User.Identity.IsAuthenticated)
             {
-                return Json(new { error = "Login" },JsonRequestBehavior.AllowGet);
+                return Json(new { error = "Login" }, JsonRequestBehavior.AllowGet);
             }
             var userId = User.Identity.GetUserId();
             var UserTemp = db.PeopleUsers.FirstOrDefault(x => x.User.Id == userId && x.Person.Id == id);
@@ -264,30 +288,7 @@ namespace WebApplication6.Controllers
             db.SaveChanges();
             return Json(new { rate = people.Rate, flag = 2, id = id }, JsonRequestBehavior.AllowGet);
         }
-        public ActionResult Info(int id) {
-            Person person = db.Persons.FirstOrDefault(x => x.Id == id);
-            if (person == null)
-            {
-                throw new HttpException(404, "Not found");
-            }
 
-            if (person.WayToPolitics != null)
-            {
-                if (person.WayToPolitics == "")
-                {
-                    ViewBag.WayToPolit = "";
-                }
-                else
-                {
-                    ViewBag.WayToPolit = person.WayToPolitics.Split('\n');
-                }
-            }
-            else
-            {
-                ViewBag.WayToPolit = "";
-            }
-            return View(person);
-        }
         protected override void Dispose(bool disposing)
         {
             if (disposing)

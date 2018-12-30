@@ -68,17 +68,12 @@ namespace WebApplication6.Controllers
         public ActionResult Create(int TagId, int peopleId)
         {
             var postType = db.Tags.Where(x => x.Id == TagId).FirstOrDefault();
-            ViewBag.PersonId = peopleId;
-            if (postType!=null)
-            {
-                ViewBag.TypeOfPost = postType.Id;
-            }
-            else
+            if (postType==null)
             {
                 return HttpNotFound();
             }
 
-            return View("Create");
+            return View("Create",new PostCreateViewModel() { PostType= postType.Id ,PersonId=peopleId});
         }
 
         // POST: Posts/Create
@@ -106,11 +101,11 @@ namespace WebApplication6.Controllers
 
                 var tagsTemp = new List<Tag>();
                 tagsTemp.Add(postType);
-                var Tags = Regex.Replace(model.Tags, "[^a-zа-яA-ZА-Я0-9,.\\s]", string.Empty);
-                foreach (var item in Tags.Split(','))
+                foreach (var item in model.Tags.Split(','))
                 {
                     tagsTemp.Add(new Tag() { Name = item });
                 }
+
                 if (model.Files != null)
                 {
                     string FileFolderPath;

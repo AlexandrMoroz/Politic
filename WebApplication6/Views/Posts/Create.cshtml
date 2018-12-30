@@ -1,11 +1,9 @@
-﻿@{
-    int type = (int)ViewBag.TypeOfPost;
-    int PersonId = (int)ViewBag.PersonId;
-
-}
+﻿@model WebApplication6.Models.PostCreateViewModel
 @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 <div class="wrapper-post">
-    <input type="text" class="inp" id="title" maxlength="100" name="Title" placeholder="Введите заголовок">
+    @Html.ValidationMessageFor(m => m.Title, "", new { @class = "validation-massage" })
+    @Html.TextBoxFor(m => m.Title, new { @class = "inp", @id = "title", @placeholder = "Введите заголовок" })
+
     <div class="post-content" id="tab-content">
     </div>
     <div class="add">
@@ -14,16 +12,16 @@
             <div class="add-img"><i class="fa fa-camera"></i></div>
         </div>
     </div>
-
-    <input type="text" class="inp" id="tags" name="Tags" maxlength="100" placeholder="Введите несколько тегов через запятую " />
+    @Html.ValidationMessageFor(m => m.Tags, "", new { @class = "validation-massage" })
+    @Html.TextBoxFor(m => m.Tags, new { @class = "inp", @id = "tags", @placeholder = "Введите несколько тегов через запятую" })
 
     @using (Html.BeginForm("Create", "Posts", FormMethod.Post, new { @id = "PostForm", enctype = "multipart/form-data" }))
     {
         @Html.AntiForgeryToken()
 
-        <input id="PostType" name="PostType" type="hidden" value="@type" required="true">
-        <input id="PersonId" name="PersonId" type="hidden" value="@PersonId">
+        @Html.HiddenFor(m => m.PostType, new { @id = "PostType"})
+        @Html.HiddenFor(m => m.PersonId, new { @id = "PersonId"})
+
         <input type="submit" id="submit" value="Добавить пост" />
     }
 </div>
-@Scripts.Render("~/Scripts/PostCreate.js")

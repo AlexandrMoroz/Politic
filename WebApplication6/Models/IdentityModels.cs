@@ -17,6 +17,9 @@ namespace WebApplication6.Models
         public virtual ICollection<Post> Posts { get; set; }
         public virtual string MainImage { get; set; }
         public virtual string Name { get; set; }
+        public virtual List<string> BanMassages { get; set; }
+        public virtual bool IsBaned { get; set; }
+        public virtual string IpAdress { get; set; }
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager)
         {
             // Обратите внимание, что authenticationType должен совпадать с типом, определенным в CookieAuthenticationOptions.AuthenticationType

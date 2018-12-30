@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Mvc.Ajax;
@@ -23,10 +24,10 @@ namespace WebApplication6.Models
             return MvcHtmlString.Create(lnk.ToString().Replace(repID, linkText));
         }
 
-        public static MvcHtmlString RawActionLink(this HtmlHelper htmlHelper, string linkText, string actionName, string controllerName, object routeValues,  object htmlAttributes)
+        public static MvcHtmlString RawActionLink(this HtmlHelper htmlHelper, string linkText, string actionName, string controllerName, object routeValues, object htmlAttributes)
         {
             var repID = Guid.NewGuid().ToString();
-            var lnk = htmlHelper.ActionLink(repID, actionName, controllerName, routeValues,  htmlAttributes);
+            var lnk = htmlHelper.ActionLink(repID, actionName, controllerName, routeValues, htmlAttributes);
             return MvcHtmlString.Create(lnk.ToString().Replace(repID, linkText));
         }
 
@@ -68,15 +69,13 @@ namespace WebApplication6.Models
 
         public static JsonResult JsonValidation(this ModelStateDictionary state)
         {
-            return new JsonResult
-            {
-                Data = new
-                {
+            return new JsonResult {
+                Data = new {
+                    
                     Tag = "ValidationError",
                     State = from e in state
                             where e.Value.Errors.Count > 0
-                            select new
-                            {
+                            select new {
                                 Name = e.Key,
                                 Errors = e.Value.Errors.Select(x => x.ErrorMessage)
                                   .Concat(e.Value.Errors.Where(x => x.Exception != null).Select(x => x.Exception.Message))
@@ -90,16 +89,21 @@ namespace WebApplication6.Models
 
     public class PostCreateViewModel
     {
-        [Required(ErrorMessage="Введите назнание статьи"), StringLength(1000, MinimumLength = 6, ErrorMessage = "Название должно должно иметь минимум 6 знаков")]
+        [Required(ErrorMessage = "Введите назнание статьи")]
+        [StringLength(500, MinimumLength = 6, ErrorMessage = "Название должно должно иметь минимум 6 знаков")]
         public string Title { get; set; }
-        [Required(ErrorMessage = "Введите несколько тегов")]
+        [Required(ErrorMessage = "Введите 3 или более тега через запятую")]
+        [TagsMinLengthValidateAttribute(ErrorMessage = "Должно быть более {0} тегов", MinLength = 3)]
+        [TagsMaxLengthValidateAttribute(ErrorMessage = "Должно быть Meнее {0} тегов", MaxLength = 10)]
+        [RegularExpression("[^a-zа-яA-ZА-Я0-9,\\s]", ErrorMessage = "Тег может содержать только пробелы, запятые, цифры, латинские и кирилические символы ")]
         public string Tags { get; set; }
         [HiddenInput(DisplayValue = false)]
         public int PersonId { get; set; }
         [HiddenInput(DisplayValue = false)]
         public int PostType { get; set; }
+        [IsImageValidateAtteibute(ErrorMessage = "Разрешена загрузка только изображений формата jpg,gif,png")]
         public HttpPostedFileBase[] Files { get; set; }
-        [MustHaveOneElementAttribute(ErrorMessage = "Пост должен содержать один раздел текста или картинки")]
+        [MustHaveOneElementAttribute(ErrorMessage = "Пост должен содержать хотябы один раздел текста или картинки")]
         public Dictionary<string, string> Order { get; set; }
 
     }
@@ -115,6 +119,78 @@ namespace WebApplication6.Models
             return false;
         }
     }
+    public class TagsMinLengthValidateAttribute : ValidationAttribute
+    {
+        public int MinLength { get; set; }
+        public TagsMinLengthValidateAttribute()
+        {
+            MinLength = 3;
+        }
+        public override bool IsValid(object value)
+        {
+            var str = value as String;
+            if (str != null)
+            {
+                return str.Split(',').Count() >= MinLength;
+            }
+
+            return false;
+        }
+    }
+    public class TagsMaxLengthValidateAttribute : ValidationAttribute
+    {
+        public int MaxLength { get; set; }
+        public TagsMaxLengthValidateAttribute()
+        {
+            MaxLength = 10;
+        }
+        public override bool IsValid(object value)
+        {
+            var str = value as String;
+            if (str != null)
+            {
+                return str.Split(',').Count() < MaxLength;
+            }
+
+            return false;
+        }
+    }
+    public class IsImageValidateAtteibute : ValidationAttribute
+    {
+
+        public override bool IsValid(object value)
+        {
+            var files = value as HttpPostedFileBase[];
+            if (files == null)
+            {
+                return true;
+            }
+            foreach (var item in files)
+            {
+                if (!ValidateFile(item))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+        public bool ValidateFile(HttpPostedFileBase file)
+        {
+            switch (file.ContentType)
+            {
+                // Example: return valid = true for following file types:
+                case ("image.gif"):
+                case ("image/jpg"):
+                case ("image/jpeg"):
+                case ("image/png"):
+                    return true;
+
+                // Otherwise if anything else, return false
+                default: return false;
+            }
+        }
+    }
+
     public class PageInfo
     {
         public int PageNumber { get; set; } // номер текущей страницы
@@ -127,30 +203,10 @@ namespace WebApplication6.Models
     }
     public class SearchStringViewModel
     {
-        [MinLength(4,ErrorMessage = "Строка должна содержать минимум 4 символа")]
+        [MinLength(4, ErrorMessage = "Строка должна содержать минимум 4 символа")]
         [MaxLength(20, ErrorMessage = "Строка должна содержать максимум 20 символов")]
         public string SearchString { get; set; }
         public int Id { get; set; }
-    }
-    public class SearchViewModel
-    {
-        public List<Person> List { get; set; }
-        public PageInfo PageInfo { get; set; }
-    }
-    public class PostSearcViewModel
-    {
-        public List<Post> List { get; set; }
-        public PageInfo PageInfo { get; set; }
-    }
-    public class PersonViewModel
-    {
-        public IEnumerable<Person> Persons { get; set; }
-        public PageInfo PageInfo { get; set; }
-    }
-    public class PostViewModel
-    {
-        public IEnumerable<Post> Posts { get; set; }
-        public PageInfo PageInfo { get; set; }
     }
     public class PersonIndexViewModel
     {

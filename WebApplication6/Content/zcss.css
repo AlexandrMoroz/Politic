@@ -387,7 +387,7 @@ RegForm p {
     cursor: pointer;
 }
 
-.password-help, .email-help, .confirm-help,Name-error {
+.validation-massage {
    
     padding: 0px;
     margin: 0px 0px 15px 0px;
@@ -666,6 +666,7 @@ input[type="checkbox"], input[type="radio"] {
     display: inline-block;
     width: calc(100% + 20px);
     text-align: center;
+    cursor:pointer;
 }
 
 .li-tabs {
@@ -1297,20 +1298,13 @@ input[type="checkbox"], input[type="radio"] {
 .element-container {
     min-height: 45px;
     display: flex;
-    position: relative;
-    align-content: stretch;
+    align-items: center;
     margin: 0 -30px;
 }
 
 .delete-option {
-    display: flex;
-    margin-left: 10px;
-    align-self: center;
-    justify-content: center;
-    width: 15px;
-    color: #212121;
     color: white;
-    margin-bottom: 15.45px;
+    font-size: 20px;
 }
 
 .create-post {
@@ -1517,31 +1511,40 @@ input[type="checkbox"], input[type="radio"] {
 }
 .people-create-form {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
 }
-.people-create-form .dropZone {
+.people-create-form #dropZone {
     justify-content: flex-start;
+    margin:0;
+    margin-right:10px;
 }
 .people-create-form .form-group {
+    display: flex;
     margin-top: 70px;
     margin-left: 10px;
-    width: 400px;
     justify-content: flex-end;
     list-style: none;
     padding: 0;
 }
+    .people-create-form .row {
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        padding-right: 10px;
+        width: 50%;
+    }
 .people-create-form .people-text-input {
-    min-height: 20px;
-    margin: 0 0 15px 0;
-    padding: 15px;
-    width: 400px;
-    box-sizing: border-box;
-    resize: none;
-    overflow: hidden;
-    border: none;
-    font-size: 16px;
-    color: #909090;
-}
+        min-height: 20px;
+        margin: 0 0 15px 0;
+        padding: 15px;
+        width: 100%;
+        box-sizing: border-box;
+        resize: none;
+        overflow: hidden;
+        border: none;
+        font-size: 16px;
+        color: #909090;
+    }
 .slick-slide {
     margin: 0px 10px;
     width: 224px;

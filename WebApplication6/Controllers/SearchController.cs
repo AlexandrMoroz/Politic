@@ -14,7 +14,7 @@ namespace WebApplication6.Controllers
     public class SearchController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
-        protected UserManager<ApplicationUser> UserManager { get; set; }
+        private UserManager<ApplicationUser> UserManager { get; set; }
         public SearchController()
         {
             this.UserManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(this.db));

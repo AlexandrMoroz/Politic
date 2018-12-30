@@ -11,6 +11,8 @@ using Microsoft.Owin.Security;
 using WebApplication6.Models;
 using System.IO;
 using System.Drawing.Imaging;
+using PagedList;
+using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace WebApplication6.Controllers
 {
@@ -19,7 +21,7 @@ namespace WebApplication6.Controllers
     {
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
-
+        private ApplicationDbContext db;
         public AccountController()
         {
         }
@@ -28,6 +30,8 @@ namespace WebApplication6.Controllers
         {
             UserManager = userManager;
             SignInManager = signInManager;
+            db = new ApplicationDbContext();
+
         }
 
         public ApplicationSignInManager SignInManager
@@ -465,7 +469,20 @@ namespace WebApplication6.Controllers
 
             base.Dispose(disposing);
         }
-
+        //дописать представление
+        [Authorize(Roles = "Admin, Moderator")]
+        public async Task<ActionResult> ManageUsers(int page = 1)
+        {
+            var pageSize = 20;
+            var logins = db.Users.ToPagedList(page,pageSize);
+            return View("ManageLogins", logins);
+        }
+        
+        public async Task<ActionResult> BanUser(string userId,string massege)
+        {
+            var user = UserManager.FindById(userId);
+            user.
+        }
         #region Вспомогательные приложения
         // Используется для защиты от XSRF-атак при добавлении внешних имен входа
         private const string XsrfKey = "XsrfId";

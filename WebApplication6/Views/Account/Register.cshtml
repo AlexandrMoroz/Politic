@@ -16,19 +16,19 @@
             @Html.AntiForgeryToken()
             <h2>@ViewBag.Title</h2>
             <div>
-                @Html.ValidationMessageFor(m => m.Name, "", new { @class = "name-help" })
+                @Html.ValidationMessageFor(m => m.Name, "", new { @class = "validation-massage" })
             </div>
             @Html.TextBoxFor(m => m.Name, new { @class = "inp", @placeholder = "Имя" })
             <div>
-                @Html.ValidationMessageFor(m => m.Email, "", new { @class = "email-help" })
+                @Html.ValidationMessageFor(m => m.Email, "", new { @class = "validation-massage" })
             </div>
             @Html.TextBoxFor(m => m.Email, new { @class = "inp", @placeholder = "Email" })
             <div>
-                @Html.ValidationMessageFor(m => m.Password, "", new { @class = "password-help" })
+                @Html.ValidationMessageFor(m => m.Password, "", new { @class = "validation-massage" })
             </div>
             @Html.PasswordFor(m => m.Password, new { @class = "inp", @placeholder = "Пароль" })
             <div>
-                @Html.ValidationMessageFor(m => m.ConfirmPassword, "", new { @class = "confirm-help" })
+                @Html.ValidationMessageFor(m => m.ConfirmPassword, "", new { @class = "validation-massage" })
             </div>
             @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "inp", @placeholder = "Подтвердите пароль" })
 
